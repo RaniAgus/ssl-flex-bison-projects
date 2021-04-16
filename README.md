@@ -48,7 +48,7 @@ $ sudo apt-get install libbison-dev
 
 En el repo se encuentran dos archivos makefile (uno para [solo flex](flex/makefile) y otro para [flex y bison](bison/makefile)), los cuales se rigen bajo la siguiente estructura para funcionar:
 
-```bash
+```makefile
 .
 │
 └─── src/  
@@ -59,7 +59,7 @@ En el repo se encuentran dos archivos makefile (uno para [solo flex](flex/makefi
 ```
 
 Al compilar, se generará lo siguiente:
-```bash
+```makefile
 .
 │
 └─── obj/  
@@ -117,7 +117,7 @@ Para más información, podés ver la [wiki de este repo](../../wiki#)
 #### Consejo
 
 El ejecutable generado va a imprimir por la salida estándar las reglas por las que va derivando:
-```bash
+```
 Starting parse
 Entering state 0
 Reducing stack by rule 1 (line 29):
@@ -146,7 +146,7 @@ Entonces, si queremos incluir una biblioteca como math, simplemente concatenamos
 
 ### Make: Nothing to be done for 'all'.
 
-```makefile
+```
 make: Nothing to be done for 'all'.
 ```
 
@@ -154,7 +154,7 @@ make: Nothing to be done for 'all'.
 
 ### Makefile: missing separator. Stop.
 
-```makefile
+```
 makefile:35: *** missing separator.  Stop.
 ```
 
@@ -165,7 +165,7 @@ En VSCode esto se puede resolver [de esta forma](https://stackoverflow.com/a/380
 ### No puedo ejecutar 'make' más de una vez / 'make clean' no elimina los archivos correctamente
 
 Probablemente, si estás en Windows y al ejecutar `make` se crea una subcarpeta `-p`, además de aparecer errores del estilo:
-```powershell
+```
 Ya existe el subdirectorio o el archivo -p.
 Error mientras se procesaba: -p.
 Ya existe el subdirectorio o el archivo obj.
@@ -173,7 +173,7 @@ Error mientras se procesaba: obj.
 make: *** [Ejemplo.exe] Error 1
 ```
 y al ejecutar `make clean` también puede que te aparezca algo como:
-```powershell
+```
 process_begin: CreateProcess(NULL, uname, ...) failed.
 rm -f obj/*
 process_begin: CreateProcess(NULL, rm -f obj/*, ...) failed.
