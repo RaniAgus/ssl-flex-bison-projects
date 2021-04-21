@@ -27,26 +27,20 @@ ifeq ($(OS),Windows_NT)
 	C_FLAGS+=-m32
 endif
 
-C_FLAGS+=-Isrc -Iobj -Wall
-Y_FLAGS+=-v -d
-L_FLAGS+=
+C_FLAGS=-Isrc -Iobj -Wall
+Y_FLAGS=-v -d
+L_FLAGS=
 
-Y_SRCS=$(wildcard src/*.y)
-L_SRCS=$(wildcard src/*.l)
-C_SRCS=$(wildcard src/*.c)
-H_SRCS=$(wildcard src/*.h)
+Y_OBJS=$(patsubst src/%.y, obj/%.tab.o, $(wildcard src/*.y))
+L_OBJS=$(patsubst src/%.l, obj/%.yy.o, $(wildcard src/*.l))
+C_OBJS=$(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
 
-Y_OBJS=$(Y_SRCS:src/%.y=obj/%.tab.o)
-L_OBJS=$(L_SRCS:src/%.l=obj/%.yy.o)
-C_OBJS=$(C_SRCS:src/%.c=obj/%.o)
-
-BINS=$(Y_SRCS:src/%.y=%.$(EXT))
+BINS=$(patsubst src/%.y, bin/%.$(EXT), $(wildcard src/*.y))
 
 all: $(BINS)
 
 clean:
-	rm -rf obj
-	rm -f *.$(EXT)
+	rm -rf bin obj
 
 debug: Y_FLAGS += --debug
 debug: L_FLAGS += -d
@@ -54,31 +48,34 @@ debug: C_FLAGS += -DDEBUG -g
 debug: clean all
 
 # Executable
-%.$(EXT): obj obj/%.tab.o obj/%.yy.o $(C_OBJS) $(H_SRCS)
+bin/%.$(EXT): bin obj $(C_OBJS) obj/%.tab.o obj/%.yy.o 
 	$(CC) $(C_FLAGS) -o "$@" $(filter %.o, $^) $(LIBS)
 	@echo "=================[ Build $@ done! ]================="
 
 # 1. Create directories
-obj:
+bin obj:
 	mkdir -p $@
 
-# 2. Bison objects
+# 2. C objects
+obj/%.o: src/%.c src/%.h
+	$(CC) $(C_FLAGS) -c -o "$@" $<
+
+obj/%.o: src/%.c
+	$(CC) $(C_FLAGS) -c -o "$@" $<
+
+# 3. Bison objects
 obj/%.tab.o: obj/%.tab.c
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
 obj/%.tab.c: src/%.y
 	$(YACC) $(Y_FLAGS) -o"$@" $<
 
-# 3. Flex objects
+# 4. Flex objects
 obj/%.yy.o: obj/%.yy.c
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
 obj/%.yy.c: src/%.l obj/%.tab.o
 	$(LEX) $(L_FLAGS) -o"$@" $<
-
-# 4. C objects
-obj/%.o: src/%.c
-	$(CC) $(C_FLAGS) -c -o "$@" $<
 
 .PHONY: all clean debug
 

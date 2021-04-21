@@ -29,20 +29,15 @@ endif
 C_FLAGS+=-Isrc -Iobj -Wall
 L_FLAGS+=
 
-L_SRCS=$(wildcard src/*.l)
-C_SRCS=$(wildcard src/*.c)
-H_SRCS=$(wildcard src/*.h)
+L_OBJS=$(patsubst src/%.l, obj/%.yy.o, $(wildcard src/*.l))
+C_OBJS=$(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
 
-L_OBJS=$(L_SRCS:src/%.l=obj/%.yy.o)
-C_OBJS=$(C_SRCS:src/%.c=obj/%.o)
-
-BINS=$(L_SRCS:src/%.l=%.$(EXT))
+BINS=$(patsubst src/%.l, bin/%.$(EXT), $(wildcard src/*.l))
 
 all: $(BINS)
 
 clean:
-	rm -rf obj
-	rm -f *.$(EXT)
+	rm -rf bin obj
 
 debug: Y_FLAGS += --debug
 debug: L_FLAGS += -d
@@ -50,24 +45,27 @@ debug: C_FLAGS += -DDEBUG -g
 debug: clean all
 
 # Executable
-%.$(EXT): obj obj/%.yy.o $(C_OBJS) $(H_SRCS)
+bin/%.$(EXT): bin obj obj/%.yy.o $(C_OBJS)
 	$(CC) $(C_FLAGS) -o "$@" $(filter %.o, $^) $(LIBS)
 	@echo "=================[ Build $@ done! ]================="
 
 # 1. Create directories
-obj:
+bin obj:
 	mkdir -p $@
 
-# 2. Flex objects
+# 2. C objects
+obj/%.o: src/%.c src/%.h
+	$(CC) $(C_FLAGS) -c -o "$@" $<
+
+obj/%.o: src/%.c
+	$(CC) $(C_FLAGS) -c -o "$@" $<
+
+# 3. Flex objects
 obj/%.yy.o: obj/%.yy.c
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
 obj/%.yy.c: src/%.l
 	$(LEX) $(L_FLAGS) -o"$@" $<
-
-# 4. C objects
-obj/%.o: src/%.c
-	$(CC) $(C_FLAGS) -c -o "$@" $<
 
 .PHONY: all clean debug
 
