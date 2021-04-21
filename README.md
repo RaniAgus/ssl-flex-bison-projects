@@ -62,13 +62,14 @@ Al compilar, se generará lo siguiente:
 ```makefile
 .
 │
-└─── obj/  
-|     └─── <nombre_archivo_final>.yy.c    # Código C generado por flex
-|     └─── <nombre_archivo_final>.tab.c   # Código C generado por bison (si corresponde)
-|     └─── <nombre_archivo_final>.tab.h   # Encabezado C generado por bison (si corresponde)
-|     └─── <nombre_archivo_final>.output  # Gramática generada por bison (si corresponde)
-|     └─── ...                            # Código máquina generado por gcc (archivos *.o)
-└─── <nombre_archivo_final>.exe/.out      # Archivo ejecutable generado por gcc
+└── bin/
+|    └─── <nombre_archivo_final>.exe/.out # Archivo ejecutable generado por gcc
+└── obj/  
+     └─── <nombre_archivo_final>.yy.c     # Código C generado por flex
+     └─── <nombre_archivo_final>.tab.c    # Código C generado por bison (si corresponde)
+     └─── <nombre_archivo_final>.tab.h    # Encabezado C generado por bison (si corresponde)
+     └─── <nombre_archivo_final>.output   # Gramática generada por bison (si corresponde)
+     └─── ...                             # Código máquina generado por gcc (archivos *.o)
 ```
 
 ## ¿Cómo configuro VSCode?
