@@ -113,7 +113,7 @@ En el caso de Bison, para debugear el proyecto hay que tener dentro del `main()`
         yydebug = 1;
     #endif
 ```
-Para más información, podés ver la [wiki de este repo](../../wiki#)
+Para más información sobre cómo funciona esta regla, podés ver la [sección sobre make debug](../../wiki#cómo-funciona-make-debug) en la wiki de este repo.
 
 #### Consejo
 
