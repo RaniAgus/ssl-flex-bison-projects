@@ -48,7 +48,7 @@ debug: C_FLAGS += -DDEBUG -g
 debug: clean all
 
 # Executable
-bin/%.$(EXT): bin obj $(C_OBJS) obj/%.tab.o obj/%.yy.o 
+bin/%.$(EXT): $(C_OBJS) obj/%.tab.o obj/%.yy.o | bin 
 	$(CC) $(C_FLAGS) -o "$@" $(filter %.o, $^) $(LIBS)
 	@echo "=================[ Build $@ done! ]================="
 
@@ -57,24 +57,24 @@ bin obj:
 	mkdir -p $@
 
 # 2. C objects
-obj/%.o: src/%.c src/%.h
+obj/%.o: src/%.c src/%.h | obj
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
-obj/%.o: src/%.c
+obj/%.o: src/%.c | obj
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
 # 3. Bison objects
-obj/%.tab.o: obj/%.tab.c
+obj/%.tab.o: obj/%.tab.c | obj
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
-obj/%.tab.c: src/%.y
+obj/%.tab.c: src/%.y | obj
 	$(YACC) $(Y_FLAGS) -o"$@" $<
 
 # 4. Flex objects
-obj/%.yy.o: obj/%.yy.c
+obj/%.yy.o: obj/%.yy.c | obj
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
-obj/%.yy.c: src/%.l obj/%.tab.o
+obj/%.yy.c: src/%.l obj/%.tab.o | obj
 	$(LEX) $(L_FLAGS) -o"$@" $<
 
 .PHONY: all clean debug
