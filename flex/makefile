@@ -45,7 +45,7 @@ debug: C_FLAGS += -DDEBUG -g
 debug: clean all
 
 # Executable
-bin/%.$(EXT): bin obj obj/%.yy.o $(C_OBJS)
+bin/%.$(EXT): obj/%.yy.o $(C_OBJS) | bin
 	$(CC) $(C_FLAGS) -o "$@" $(filter %.o, $^) $(LIBS)
 	@echo "=================[ Build $@ done! ]================="
 
@@ -54,17 +54,17 @@ bin obj:
 	mkdir -p $@
 
 # 2. C objects
-obj/%.o: src/%.c src/%.h
+obj/%.o: src/%.c src/%.h | obj
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
-obj/%.o: src/%.c
+obj/%.o: src/%.c | obj
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
 # 3. Flex objects
-obj/%.yy.o: obj/%.yy.c
+obj/%.yy.o: obj/%.yy.c | obj
 	$(CC) $(C_FLAGS) -c -o "$@" $<
 
-obj/%.yy.c: src/%.l
+obj/%.yy.c: src/%.l | obj
 	$(LEX) $(L_FLAGS) -o"$@" $<
 
 .PHONY: all clean debug
