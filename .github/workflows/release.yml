@@ -1,0 +1,36 @@
+name: Publish release including template tarballs
+
+on:
+  push:
+    tags:
+      - "v*.*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate release files
+        run: |
+          tar cvzf bison-${{ github.ref_name }}.tar.gz bison
+          md5sum bison-${{ github.ref_name }}.tar.gz > bison-${{ github.ref_name }}.tar.gz.md5
+          sha1sum bison-${{ github.ref_name }}.tar.gz > bison-${{ github.ref_name }}.tar.gz.sha1
+          tar cvzf flex-${{ github.ref_name }}.tar.gz flex
+          md5sum flex-${{ github.ref_name }}.tar.gz > flex-${{ github.ref_name }}.tar.gz.md5
+          sha1sum flex-${{ github.ref_name }}.tar.gz > flex-${{ github.ref_name }}.tar.gz.sha1
+      - name: Create pre-release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            bison-${{ github.ref_name }}.tar.gz
+            bison-${{ github.ref_name }}.tar.gz.md5
+            bison-${{ github.ref_name }}.tar.gz.sha1
+            flex-${{ github.ref_name }}.tar.gz
+            flex-${{ github.ref_name }}.tar.gz.md5
+            flex-${{ github.ref_name }}.tar.gz.sha1
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
